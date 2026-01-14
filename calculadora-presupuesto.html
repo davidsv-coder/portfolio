@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Presupuesto Web | Guasal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .portfolio-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+        }
+        
+        .portfolio-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero-gradient {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        
+        .calculator-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        
+        .section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .option-card {
+            position: relative;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--card);
+        }
+        
+        .option-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .option-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+        
+        .option-card input[type="checkbox"],
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .option-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .option-price {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .option-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+        
+        .price-summary {
+            position: sticky;
+            bottom: 20px;
+            background: var(--gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            margin-top: 3rem;
+        }
+        
+        .price-summary-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .price-info h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .total-price {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .price-range {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+        
+        .cta-button {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: var(--border);
+            color: var(--secondary);
+        }
+        
+        .modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .modal p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .submit-button {
+            width: 100%;
+            background: var(--gradient);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.75rem;
+        }
+        
+        .feature-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .price-summary-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cta-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">GUASAL</div>
+            <a href="https://davidsv-coder.github.io/portfolio" class="portfolio-link">Ver Portfolio</a>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>Calcula el presupuesto de <span class="hero-gradient">tu sitio web</span></h1>
+        <p>Obtén un estimado profesional en segundos. Selecciona las características que necesitas y recibe una cotización instantánea.</p>
+    </div>
+
+    <div class="container">
+        <div class="calculator-card">
+            <!-- Tipo de Sitio -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">1</span>
+                    Tipo de sitio web
+                </h2>
+                <div class="option-grid">
+                    <label class="option-card">
+                        <input type="radio" name="tipo" value="300" data-name="Landing Page" checked>
+                        <div class="option-title">Landing Page</div>
+                        <div class="option-price">Desde $300</div>
+                        <div class="option-description">Una página optimizada para conversión</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="tipo" value="500" data-name="Sitio Corporativo">
+                        <div class="option-title">Sitio Corporativo</div>
+                        <div class="option-price">Desde $500</div>
+                        <div class="option-description">5-10 páginas con diseño profesional</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="tipo" value="800" data-name="E-commerce">
+                        <div class="option-title">E-commerce</div>
+                        <div class="option-price">Desde $800</div>
+                        <div class="option-description">Tienda online completa</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="tipo" value="1200" data-name="Aplicación Web">
+                        <div class="option-title">Aplicación Web</div>
+                        <div class="option-price">Desde $1,200</div>
+                        <div class="option-description">Sistema personalizado</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Características -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">2</span>
+                    Características adicionales
+                </h2>
+                <div class="option-grid">
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="150" data-name="Diseño personalizado">
+                        <div class="option-title">Diseño Personalizado</div>
+                        <div class="option-price">+$150</div>
+                        <div class="option-description">Diseño único para tu marca</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="100" data-name="SEO básico">
+                        <div class="option-title">SEO Básico</div>
+                        <div class="option-price">+$100</div>
+                        <div class="option-description">Optimización para buscadores</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="200" data-name="Sistema de blog">
+                        <div class="option-title">Sistema de Blog</div>
+                        <div class="option-price">+$200</div>
+                        <div class="option-description">Para publicar contenido</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="120" data-name="Formularios avanzados">
+                        <div class="option-title">Formularios Avanzados</div>
+                        <div class="option-price">+$120</div>
+                        <div class="option-description">Contacto y cotizaciones</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="180" data-name="Integración de pagos">
+                        <div class="option-title">Integración de Pagos</div>
+                        <div class="option-price">+$180</div>
+                        <div class="option-description">Stripe, PayPal, etc.</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" class="feature" value="250" data-name="Panel de administración">
+                        <div class="option-title">Panel de Admin</div>
+                        <div class="option-price">+$250</div>
+                        <div class="option-description">Gestiona tu contenido fácilmente</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">3</span>
+                    Tiempo de entrega
+                </h2>
+                <div class="option-grid">
+                    <label class="option-card">
+                        <input type="radio" name="timeline" value="0" data-name="2-3 semanas" checked>
+                        <div class="option-title">2-3 Semanas</div>
+                        <div class="option-price">Estándar</div>
+                        <div class="option-description">Tiempo normal de desarrollo</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="timeline" value="150" data-name="1 semana">
+                        <div class="option-title">1 Semana</div>
+                        <div class="option-price">+$150</div>
+                        <div class="option-description">Entrega rápida</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="timeline" value="300" data-name="3-5 días">
+                        <div class="option-title">3-5 Días</div>
+                        <div class="option-price">+$300</div>
+                        <div class="option-description">Prioridad urgente</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Summary -->
+        <div class="price-summary">
+            <div class="price-summary-content">
+                <div class="price-info">
+                    <h3>Presupuesto estimado</h3>
+                    <div class="total-price">$<span id="totalPrice">300</span></div>
+                    <div class="price-range">Rango: $<span id="minPrice">300</span> - $<span id="maxPrice">350</span></div>
+                </div>
+                <button class="cta-button" onclick="openModal()">
+                    Solicitar Cotización →
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Desarrollo Rápido</h3>
+                <p>Entrega en tiempo récord sin comprometer calidad</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Diseño Profesional</h3>
+                <p>Interfaces modernas que convierten visitantes en clientes</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>100% Responsive</h3>
+                <p>Perfecto en móviles, tablets y computadoras</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <h2>Solicitar Cotización</h2>
+            <p>Déjame tus datos y te contactaré en menos de 24 horas con una propuesta detallada.</p>
+            <form id="quoteForm">
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" required placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp / Teléfono</label>
+                    <input type="tel" required placeholder="+502 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label>Cuéntame sobre tu proyecto</label>
+                    <textarea placeholder="Describe brevemente lo que necesitas..."></textarea>
+                </div>
+                <input type="hidden" id="selectedOptions" name="options">
+                <input type="hidden" id="estimatedPrice" name="price">
+                <button type="submit" class="submit-button">Enviar Solicitud</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let selectedOptions = [];
+        
+        function calculatePrice() {
+            let total = 0;
+            selectedOptions = [];
+            
+            // Get base price from tipo
+            const tipoRadio = document.querySelector('input[name="tipo"]:checked');
+            if (tipoRadio) {
+                total += parseInt(tipoRadio.value);
+                selectedOptions.push(tipoRadio.dataset.name);
+            }
+            
+            // Add features
+            document.querySelectorAll('.feature:checked').forEach(checkbox => {
+                total += parseInt(checkbox.value);
+                selectedOptions.push(checkbox.dataset.name);
+            });
+            
+            // Add timeline
+            const timelineRadio = document.querySelector('input[name="timeline"]:checked');
+            if (timelineRadio) {
+                total += parseInt(timelineRadio.value);
+                if (timelineRadio.value !== "0") {
+                    selectedOptions.push(`Entrega: ${timelineRadio.dataset.name}`);
+                }
+            }
+            
+            // Update display
+            document.getElementById('totalPrice').textContent = total;
+            document.getElementById('minPrice').textContent = total;
+            document.getElementById('maxPrice').textContent = Math.round(total * 1.15);
+            
+            return total;
+        }
+        
+        // Add event listeners
+        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', function() {
+                // Update visual selection
+                const card = this.closest('.option-card');
+                if (this.type === 'radio') {
+                    document.querySelectorAll(`input[name="${this.name}"]`).forEach(radio => {
+                        radio.closest('.option-card').classList.remove('selected');
+                    });
+                }
+                
+                if (this.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+                
+                calculatePrice();
+            });
+        });
+        
+        // Initialize
+        calculatePrice();
+        document.querySelector('input[name="tipo"]').closest('.option-card').classList.add('selected');
+        document.querySelector('input[name="timeline"]').closest('.option-card').classList.add('selected');
+        
+        function openModal() {
+            const total = calculatePrice();
+            document.getElementById('selectedOptions').value = selectedOptions.join(', ');
+            document.getElementById('estimatedPrice').value = `$${total}`;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        document.getElementById('quoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Aquí normalmente enviarías los datos a un servidor
+            // Por ahora solo mostramos un mensaje
+            alert('¡Gracias por tu solicitud! Te contactaré pronto para discutir tu proyecto.');
+            closeModal();
+            this.reset();
+        });
+    </script>
+</body>
+</html>
